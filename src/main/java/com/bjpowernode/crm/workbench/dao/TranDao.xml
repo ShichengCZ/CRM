@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.workbench.dao.TranDao">
+
+    <select id="getCharts" resultType="map">
+
+        select
+        count(*) as value,
+        stage as name
+
+
+        from tbl_tran
+
+        group by stage
+
+    </select>
+
+
+
+    <select id="getTotal" resultType="int">
+
+        select count(*) from tbl_tran
+
+    </select>
+
+    <update id="changeStage">
+
+        update tbl_tran set stage=#{stage},editBy=#{editBy},editTime=#{editTime}
+
+        where id=#{id}
+
+    </update>
+
+    <select id="getTransactionById" resultType="Tran">
+
+        select
+        tran.id,
+        user.name as owner,
+        tran.money,
+        tran.name,
+        tran.expectedDate,
+        cus.name as customerId,
+        tran.stage,
+        tran.type,
+        tran.source,
+        act.name as activityId,
+        con.fullname as contactsId,
+        tran.createBy,
+        tran.createTime,
+        tran.editBy,
+        tran.editTime,
+        tran.description,
+        tran.contactSummary,
+        tran.nextContactTime
+
+        from tbl_tran tran
+        left join tbl_user user
+        on tran.owner = user.id
+        left join tbl_customer cus
+        on tran.customerId = cus.id
+        left join tbl_activity act
+        on tran.activityId=act.id
+        left join tbl_contacts con
+        on tran.contactsId = con.id
+
+        where tran.id = #{id}
+
+    </select>
+    
+    
+    <select id="getTransactionNum" resultType="Integer">
+
+        select count(*)
+
+         from tbl_tran t
+         join tbl_user u
+         on t.owner=u.id
+         join tbl_customer c
+         on t.customerId=c.id
+         join tbl_contacts con
+         on t.contactsId=con.id
+
+         <where>
+             <if test="owner != '' and owner != null ">
+                u.name like '%' #{owner} '%'
+             </if>
+
+             <if test="name != '' and name != null ">
+                and t.name like '%' #{name} '%'
+             </if>
+
+             <if test="customer != '' and customer != null ">
+                and c.name like '%' #{customer} '%'
+             </if>
+
+             <if test="stage != '' and stage != null ">
+                and t.stage = #{stage}
+             </if>
+
+             <if test="source != '' and source != null ">
+                 and t.source = #{source}
+             </if>
+
+             <if test="type != '' and type != null ">
+                and t.type = #{type}
+             </if>
+
+             <if test="contact != '' and contact != null ">
+                 and con.fullname like '%' #{contact} '%'
+             </if>
+
+
+         </where>
+
+    </select>
+
+
+    <select id="getTransactionList" resultType="Tran">
+
+        select
+
+        t.id,
+        t.name,
+        c.name as customerId,
+        t.stage,
+        t.type,
+        u.name as owner,
+        t.source,
+        con.fullname as contactsId
+
+         from tbl_tran t
+         join tbl_user u
+         on t.owner=u.id
+         join tbl_customer c
+         on t.customerId=c.id
+         join tbl_contacts con
+         on t.contactsId=con.id
+        <where>
+            <if test="owner != '' and owner != null ">
+                u.name = #{owner}
+            </if>
+
+            <if test="name != '' and name != null ">
+                and t.name like '%' #{name} '%'
+            </if>
+
+            <if test="customer != '' and customer != null ">
+                and c.name like '%' #{customer} '%'
+            </if>
+
+            <if test="stage != '' and stage != null ">
+                and t.stage = #{stage}
+            </if>
+
+            <if test="source != '' and source != null ">
+                and t.source = #{source}
+            </if>
+
+            <if test="type != '' and type != null ">
+                and t.type = #{type}
+            </if>
+
+            <if test="contact != '' and contact != null ">
+                and con.fullname like '%' #{contact} '%'
+            </if>
+        </where>
+         limit #{pageOver},#{pageSize}
+
+
+    </select>
+
+
+    <insert id="save">
+
+        insert into tbl_tran(
+            id,
+            owner,
+            money,
+            name,
+            expectedDate,
+            customerId,
+            stage,
+            type,
+            source,
+            activityId,
+            contactsId,
+            createBy,
+            createTime,
+            description,
+            contactSummary,
+            nextContactTime
+        ) values (
+
+           #{id},
+           #{owner},
+           #{money},
+           #{name},
+           #{expectedDate},
+           #{customerId},
+           #{stage},
+           #{type},
+           #{source},
+           #{activityId},
+           #{contactsId},
+           #{createBy},
+           #{createTime},
+           #{description},
+           #{contactSummary},
+           #{nextContactTime}
+
+
+        )
+
+    </insert>
+  	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
